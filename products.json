@@ -1,0 +1,42 @@
+{
+    "products":[
+    {
+    "id": 1,
+    "title":"Yandex Phone",
+    "description":"This is the best <em>cheap</em> phone.", 
+    "image":"assets/yandex_phone.png",  
+    "price":10000, 
+    "availaЬleInventory":10, 
+    "rating":3
+},
+
+    {
+    "id": 2,
+    "title":"Xiaomi Mi Mix Alpha",
+    "description":"This is the best <em>cheap</em> phone.", 
+    "image":"assets/xiaomi_mimixalpha.png",  
+    "price":150000, 
+    "availaЬleInventory":3, 
+    "rating":4
+    },
+    {
+        "id": 3,
+    "title":"Huawei P40 Pro",
+    "description":"This is the best <em>cheap</em> phone.", 
+    "image":"assets/huawei_p40.png",  
+    "price":100000, 
+    "availaЬleInventory":6, 
+    "rating":5
+    },
+    {
+        "id": 4,
+    "title":"Samsung Galaxy S20",
+    "description":"This is the best <em>cheap</em> phone.", 
+    "image":"assets/yandex_phone.png",  
+    "price":110000, 
+    "availaЬleInventory":7, 
+    "rating":5
+    }
+
+    ]
+}

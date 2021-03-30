@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.2/axios.js"></script>
     <title>Document</title>
 </head>
 <body>
@@ -18,22 +19,31 @@
     <main>
         <div class="row product">
             <div v-if="showProduct">
+            <div v-for="product in products">
             <div class="col">
                 <figure>
-                    <img :src="product.image">
+                    <img :src="product && product.image">
                 </figure>
             </div>
             <div class="col col-expand">
                 <h1 v-text="product.title"></h1>
                 <p v-html="product.description" ></p>
                 <p class="price">{{ product.price | formatPrice }}</p>
-                <button class="default" @click="addToCart" v-if="canAddToCart">
+                <button class="default" @click="addToCart(product)" v-if="canAddToCart(product)">
                     Add to card
                 </button>
                 <button class="disabled" v-else>Add to card</button>
-                <span class="inventory-message" v-if="product.availaЬleInventory - cartItemCount < 5">
-                    Only {{product.availaЬleInventory - cartItemCount}} left!
+                <span class="inventory-message" v-if="product.availaЬleInventory - cartCount(product.id) === 0">
+                    All Out!
                 </span>
+                <span class="inventory-message" v-else-if="product.availaЬleInventory - cartCount(product.id) < 5">
+                    Only {{product.availaЬleInventory - cartCount(product.id)}} left!
+                </span>
+                <span class="inventory-message" v-else>Buy Now!</span>
+                <div class="rating">
+                    <span v-for="n in 5" :class="{'rating-active':checkRating(n,product)}">★</span>
+                </div>
+            </div>
             </div>
             </div>
             <div v-else>
@@ -130,8 +140,10 @@ var vue1= new Vue({ //создание компонента вью
             description:"This is the best <em>cheap</em>"+ " phone.", //v-html adds html
             image:"assets/yandex_phone.png",  // v-bind или : для привязки значения атрибута к data
             price:10000, //{{свойство|фильтр}}
-            availaЬleInventory:10, //в v-if можно вставать выражения
+            availaЬleInventory:10, //в v-if можно вставать выражения  порядок v-if v-else-if  v-else
+            rating:3, //активные классы :class="{'class_name':method()}"
         },
+        products:[],
         cart:[],
         showProduct:true, //нужно ли показывать страницу
         //формат полей ввода v-model двунаправленная связь экземпляра вью и дома
@@ -177,15 +189,38 @@ var vue1= new Vue({ //создание компонента вью
                 }
             }
         },
+        created:function(){
+            axios.get('./products.json') //загружает в response из products.json
+            .then((response)=>{
+                this.products=response.data.products; //добавляет response.data.products в this.products
+                console.log(this.products);
+            });
+        },
+
         methods:{ //для кликов и тд
-            addToCart : function() {
-            this.cart.push( this.product.id );
+            addToCart : function(aProduct) {
+            this.cart.push( aProduct.id );
             },
             showCheckout(){  //можно не писать :function()
                 this.showProduct=this.showProduct ? false : true; //if showProduct true then returns false
             },
             submitForm(){
                 alert("Submitted!")
+            },
+            checkRating(n, myProduct){
+                return myProduct.rating-n>=0;
+            },
+            canAddToCart(aProduct){
+                return aProduct.availaЬleInventory >this.cartCount(aProduct.id);
+            },
+            cartCount(id){
+                let count=0;
+                for(var i=0;i<this.cart.length;i++){
+                    if(this.cart[i]===id){
+                        count++
+                    }
+                }
+                return count;
             }
             
         },
@@ -193,11 +228,24 @@ var vue1= new Vue({ //создание компонента вью
             cartItemCount:function(){
                 return this.cart.length || "0"; //then cart.length null function returns 0
             },
-            canAddToCart:function(){ // v-show директива отображает разметку только при true. Vue определяет css этого элемента display none. Т.е этот элемент все еще присутствует в DOM 
+            /*canAddToCart:function(){ // v-show директива отображает разметку только при true. Vue определяет css этого элемента display none. Т.е этот элемент все еще присутствует в DOM 
                 //v-show можно определять и ко вложенным тегам
                 // !!! либо v-if с v-else чтобы кнопка не пропадала. Убирают один из элементов
                 //РАЗЛИЧИЕ V-SHOW ИЗМЕНЯЕТ СSS А V-IF УДАЛЯЕТ ИЗ DOM
                 return this.product.availaЬleInventory > this.cartItemCount;
+            } */
+            sortededProducts(){
+                if(this.products.length>0){
+                    let productsArray=this.products.splice(0);
+                    function compare(a,b){
+                        if(a.title.toLowerCase()<b.title.toLowerCase())
+                        return -1;
+                        id(a.title.toLowerCase()>b.title.toLowerCase())
+                        return 1;
+                    return 0;
+                    }
+                    return productsArray.sort(compare);
+                }
             }
        }
 

@@ -2,3 +2,8 @@ img{
     width: 100px;
     height: 100px;
 }
+.rating-active{
+    color:gold;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}
